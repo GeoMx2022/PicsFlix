@@ -1,11 +1,28 @@
 import React from "react";
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
-import { FcGoogle } from "react-icons/fc";
+import { GoogleLogin } from "@react-oauth/google";
+import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import loginVideo from "../assets/loginVideo.mp4";
 import logoWhite from "../assets/picsFlix_logo_white.png";
+import { client } from "../client";
 
-const Login = () => {
+export default function Login() {
+  const navigate = useNavigate();
+
+  const getOrCreateUser = async (credentialResponse) => {
+    const decodedData = jwt_decode(credentialResponse.credential);
+    localStorage.setItem("user", JSON.stringify(decodedData));
+    const { name, picture, sub } = decodedData;
+    const doc = {
+      _id: sub,
+      _type: "user",
+      userName: name,
+      image: picture,
+    };
+    await client.createIfNotExists(doc);
+    navigate('/', { replace: true })
+  };
+
   return (
     <div className="flex h-screen flex-col items-center justify-start">
       <div className="relative h-full w-full">
@@ -26,7 +43,7 @@ const Login = () => {
           <div className="shadow-2xl">
             <GoogleLogin
               onSuccess={(credentialResponse) => {
-                console.log(credentialResponse);
+                getOrCreateUser(credentialResponse);
               }}
               onError={() => {
                 console.log("Login Failed");
@@ -40,4 +57,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+

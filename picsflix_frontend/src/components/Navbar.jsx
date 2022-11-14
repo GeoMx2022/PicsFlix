@@ -19,6 +19,17 @@ export default function Navbar({ searchTerm, setSearchTerm, user }) {
           className="w-full bg-white p-2 outline-none"
         />
       </div>
+      <div className="flex gap-3">
+        <Link to={`user-profile/${user?._id}`} className="hidden md:block">
+          <img src={user.image} alt="user" className="h-12 w-14 rounded-lg" />
+        </Link>
+        <Link
+          to="create-pin"
+          className="flex h-12 w-12 items-center justify-center rounded-lg bg-black text-white md:h-12 md:w-14"
+        >
+          <IoMdAdd />
+        </Link>
+      </div>
     </div>
   );
 }
